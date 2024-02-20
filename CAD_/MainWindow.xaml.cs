@@ -14,6 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Newtonsoft.Json;
+using Microsoft.Win32;
+
 
 namespace CAD_
 {
@@ -62,8 +64,19 @@ namespace CAD_
         private void Save()
         {
             Log.Debug("Pokus o uložení souboru");
-            var text = canvas2D.ToString();
-            File.WriteAllText(file, JsonConvert.SerializeObject(canvas2D));
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*";
+            saveFileDialog.Title = "Save CAD File";
+            saveFileDialog.DefaultExt = ".json";
+            saveFileDialog.AddExtension = true;
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                file = saveFileDialog.FileName;
+                var text = canvas2D.ToString();
+                File.WriteAllText(file, JsonConvert.SerializeObject(canvas2D));
+            }
         }
 
         private void Save_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -94,5 +107,6 @@ namespace CAD_
                 canvas2D.Refresh(canvas);
             }
         }
+
     }
 }
