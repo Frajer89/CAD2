@@ -43,21 +43,34 @@ namespace CAD_
         private void Open()
         {
             Log.Debug("Pokus o otevření souboru");
-            if (File.Exists(file))
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "CAD files (*.cad)|*.cad|All files (*.*)|*.*";
+            openFileDialog.Title = "Open CAD File";
+
+            if (openFileDialog.ShowDialog() == true)
             {
+                file = openFileDialog.FileName;
+
+                // Ensure the selected file has a ".json" extension
+                if (!file.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+                {
+                    MessageBox.Show("Invalid file format. Please select a valid CAD file.");
+                    return;
+                }
+
                 try
                 {
                     canvas2D = JsonConvert.DeserializeObject<Canvas2D>(File.ReadAllText(file));
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    MessageBox.Show($"Chyba otevření souboru:\r\n{ex.Message}");
+                    MessageBox.Show($"Error opening file:\r\n{ex.Message}");
                 }
             }
             else
             {
-                MessageBox.Show($"Soubor {file} neexistuje");
-                Log.Warn($"Soubor {file} neexistuje");
+                MessageBox.Show("File selection canceled.");
             }
         }
 
@@ -66,18 +79,26 @@ namespace CAD_
             Log.Debug("Pokus o uložení souboru");
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*";
+            saveFileDialog.Filter = "CAD files (*.cad)|*.cad|All files (*.*)|*.*";
             saveFileDialog.Title = "Save CAD File";
-            saveFileDialog.DefaultExt = ".json";
+            saveFileDialog.DefaultExt = ".cad";
             saveFileDialog.AddExtension = true;
 
             if (saveFileDialog.ShowDialog() == true)
             {
                 file = saveFileDialog.FileName;
+
+                
+                if (!file.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+                {
+                    file += ".json";
+                }
+
                 var text = canvas2D.ToString();
                 File.WriteAllText(file, JsonConvert.SerializeObject(canvas2D));
             }
         }
+    
 
         private void Save_Executed(object sender, ExecutedRoutedEventArgs e)
         {
