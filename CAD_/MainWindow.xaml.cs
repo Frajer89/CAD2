@@ -48,12 +48,15 @@ namespace CAD_
             openFileDialog.Filter = "CAD files (*.cad)|*.cad|All files (*.*)|*.*";
             openFileDialog.Title = "Open CAD File";
 
+            // Set focus to the canvas before opening the file
+            canvas.Focus();
+
             if (openFileDialog.ShowDialog() == true)
             {
                 file = openFileDialog.FileName;
 
-                // Ensure the selected file has a ".json" extension
-                if (!file.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+                // Ensure the selected file has a ".cad" extension
+                if (!file.EndsWith(".cad", StringComparison.OrdinalIgnoreCase))
                 {
                     MessageBox.Show("Invalid file format. Please select a valid CAD file.");
                     return;
@@ -62,6 +65,9 @@ namespace CAD_
                 try
                 {
                     canvas2D = JsonConvert.DeserializeObject<Canvas2D>(File.ReadAllText(file));
+
+                    // Refresh the canvas immediately after opening the file
+                    canvas2D.Refresh(canvas);
                 }
                 catch (Exception ex)
                 {
@@ -87,13 +93,6 @@ namespace CAD_
             if (saveFileDialog.ShowDialog() == true)
             {
                 file = saveFileDialog.FileName;
-
-                
-                if (!file.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
-                {
-                    file += ".json";
-                }
-
                 var text = canvas2D.ToString();
                 File.WriteAllText(file, JsonConvert.SerializeObject(canvas2D));
             }
