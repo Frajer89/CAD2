@@ -126,6 +126,17 @@ namespace CAD_
                 canvas2D.AddPoint(e.GetPosition(canvas));
                 canvas2D.Refresh(canvas);
             }
+            else if (e.RightButton == MouseButtonState.Pressed)
+            {
+                // Assuming right mouse button is used for drawing lines
+                if (canvas2D.Points.Count >= 2)
+                {
+                    Point startPoint = canvas2D.Points[canvas2D.Points.Count - 2];
+                    Point endPoint = canvas2D.Points[canvas2D.Points.Count - 1];
+                    canvas2D.AddLine(startPoint, endPoint);
+                    canvas2D.Refresh(canvas);
+                }
+            }
         }
 
     }
